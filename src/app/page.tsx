@@ -1,7 +1,6 @@
 "use client";
 import * as React from "react";
 import AWS from "aws-sdk";
-import Image from "next/image";
 import { mergeArrays, readTextFile } from "@/utils";
 import Link from "next/link";
 import { cn } from "@/lib/utils";

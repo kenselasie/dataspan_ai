@@ -5,7 +5,7 @@ import { Dot, Trash2 } from "lucide-react";
 import progressImg from "@/assets/progress.svg";
 const Navigation = ({ data }: { data: string[] }) => {
   return (
-    <aside className="w-[332px] border rounded-lg m-7">
+    <aside className="w-[400px] border rounded-lg m-7">
       <div className="h-[75px] w-[95%] flex justify-center items-center m-2">
         <Image src={logo} alt="org_logo" />
       </div>

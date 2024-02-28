@@ -76,13 +76,13 @@ const ImagesContainer = ({ data }: ImagesContainerType) => {
         </DialogContent>
       </Dialog>
       <div>
-        <div className="flex justify-center mt-16">
+        <div className="flex justify-center mt-16 text-sm">
           <div className="bg-gray-200 rounded-3xl">
             {Array.from({ length: Math.ceil(data.length / itemsPerPage) }).map(
               (_, index) => (
                 <button
                   key={index}
-                  className={`px-3 py-1 mr-2 rounded-full ${
+                  className={`px-3 py-1 mr-1 rounded-full ${
                     currentPage === index + 1
                       ? "bg-[#FFD75C] text-white"
                       : "bg-gray-200"
