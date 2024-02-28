@@ -1,4 +1,4 @@
-import { BoneFractureType } from "./app/page";
+import { BoneFractureType } from "./components/Homepage";
 
 export const mergeArrays = async (
   imagesData: string[],

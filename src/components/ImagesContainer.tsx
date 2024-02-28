@@ -1,9 +1,9 @@
 "use client";
 import * as React from "react";
-import { BoneFractureType } from "@/app/page";
 import Image from "next/image";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { useSearchParams } from "next/navigation";
+import { BoneFractureType } from "./Homepage";
 type ImagesContainerType = {
   data: BoneFractureType[];
 };
