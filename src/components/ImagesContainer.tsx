@@ -61,65 +61,20 @@ const ImagesContainer = ({ data }: ImagesContainerType) => {
   }, [mode]);
 
   return (
-    <div className="flex flex-col mb-10">
-      <Dialog open={openDialog} onOpenChange={() => setOpendialog(false)}>
-        <div className="grid grid-cols-10 items-center gap-4 w-max">
-          {currentItems?.map((el, i) => (
-            <div
-              className="relative w-full"
-              onClick={() => showImageModal(el)}
-              key={i}
-            >
-              <Image
-                src={el.thumbnail}
-                alt={el.labels}
-                className="w-[100px] h-[100px]"
-                width={100}
-                height={100}
-              />
-              <svg
-                width="100%"
-                height="100%"
-                viewBox="0 0 1 1"
-                style={{ position: "absolute", top: 0, left: 0 }}
+    <React.Suspense>
+      <div className="flex flex-col mb-10">
+        <Dialog open={openDialog} onOpenChange={() => setOpendialog(false)}>
+          <div className="grid grid-cols-10 items-center gap-4 w-max">
+            {currentItems?.map((el, i) => (
+              <div
+                className="relative w-full"
+                onClick={() => showImageModal(el)}
+                key={i}
               >
-                <polygon
-                  width={10}
-                  points={scaleCoordinates(el.labels, 100, 100)}
-                  fill={classAttr.classId?.color}
-                  stroke="red"
-                  strokeWidth={2}
-                />
-              </svg>
-            </div>
-          ))}
-        </div>
-        <DialogContent className="sm:px-16 sm:max-w-[600px]">
-          {modalData && (
-            <div>
-              <div className="sm:max-w-[400px]">
-                
-                <p className="text-wrap break-normal">{modalData.labels.substring(2)}</p>
-              </div>
-              <p className="text-wrap break-normal truncate">
-                  {decodeURIComponent(modalData.image)
-                    .replace(href, "")
-                    .replace("/valid/images/", "")
-                    .replace("/test/images/", "")
-                    .replace("/train/images/", "")}
-                </p>
-              <div className="relative w-full flex flex-col items-center m-5">
-
-                <div className="self-start">
-                  <p>Details:</p>
-                  <button className="px-5 mb-4  rounded-3xl bg-yellow-400">
-                    fracture_1
-                  </button>
-                </div>
                 <Image
-                  src={modalData.image}
-                  alt={modalData.image}
-                  className="w-[500px] h-[500px]"
+                  src={el.thumbnail}
+                  alt={el.labels}
+                  className="w-[100px] h-[100px]"
                   width={100}
                   height={100}
                 />
@@ -130,26 +85,73 @@ const ImagesContainer = ({ data }: ImagesContainerType) => {
                   style={{ position: "absolute", top: 0, left: 0 }}
                 >
                   <polygon
-                    points={scaleCoordinates(
-                      modalData.labels.substring(2),
-                      500,
-                      500
-                    )}
+                    width={10}
+                    points={scaleCoordinates(el.labels, 100, 100)}
                     fill={classAttr.classId?.color}
                     stroke="red"
                     strokeWidth={2}
                   />
                 </svg>
               </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-      <div>
-        <div className="flex justify-center mt-16 text-sm">
-          <div className="bg-gray-200 rounded-3xl">
-            {Array.from({ length: Math.ceil(data.length / itemsPerPage) }).map(
-              (_, index) => (
+            ))}
+          </div>
+          <DialogContent className="sm:px-16 sm:max-w-[600px]">
+            {modalData && (
+              <div>
+                <div className="sm:max-w-[400px]">
+                  <p className="text-wrap break-normal">
+                    {modalData.labels.substring(2)}
+                  </p>
+                </div>
+                <p className="text-wrap break-normal truncate">
+                  {decodeURIComponent(modalData.image)
+                    .replace(href, "")
+                    .replace("/valid/images/", "")
+                    .replace("/test/images/", "")
+                    .replace("/train/images/", "")}
+                </p>
+                <div className="relative w-full flex flex-col items-center m-5">
+                  <div className="self-start">
+                    <p>Details:</p>
+                    <button className="px-5 mb-4  rounded-3xl bg-yellow-400">
+                      fracture_1
+                    </button>
+                  </div>
+                  <Image
+                    src={modalData.image}
+                    alt={modalData.image}
+                    className="w-[500px] h-[500px]"
+                    width={100}
+                    height={100}
+                  />
+                  <svg
+                    width="100%"
+                    height="100%"
+                    viewBox="0 0 1 1"
+                    style={{ position: "absolute", top: 0, left: 0 }}
+                  >
+                    <polygon
+                      points={scaleCoordinates(
+                        modalData.labels.substring(2),
+                        500,
+                        500
+                      )}
+                      fill={classAttr.classId?.color}
+                      stroke="red"
+                      strokeWidth={2}
+                    />
+                  </svg>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
+        <div>
+          <div className="flex justify-center mt-16 text-sm">
+            <div className="bg-gray-200 rounded-3xl">
+              {Array.from({
+                length: Math.ceil(data.length / itemsPerPage),
+              }).map((_, index) => (
                 <button
                   key={index}
                   className={`px-3 py-1 mr-1 rounded-full ${
@@ -161,12 +163,12 @@ const ImagesContainer = ({ data }: ImagesContainerType) => {
                 >
                   {index + 1}
                 </button>
-              )
-            )}
+              ))}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </React.Suspense>
   );
 };
 

@@ -25,7 +25,6 @@ export default function Home() {
     apiVersion: "2006-03-01",
     params: { Bucket: albumBucketName },
   });
-  const href = `https://${s3.config.endpoint}/${albumBucketName}/bone-fracture-detection`;
   const [isLoading, setIsLoading] = React.useState(false);
 
   const [albums, setAlbums] = React.useState<string[]>([]);
@@ -148,89 +147,91 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="flex h-screen w-screen">
-      <Navigation data={dataClassNames} />
-      <main className="flex-1 h-[90vh] my-10">
-        {!isLoading ? (
-          <div className="mx-3">
-            <div className="flex items-center justify-between mb-14">
-              <h2 className="capitalize-first-letter font-semibold text-2xl">
-                {albums[0]}
-              </h2>
-              <p className="text-base">
-                <span className="font-semibold">50</span> of{" "}
-                <span className="font-semibold">{dataToDisplay.length}</span>{" "}
-                images
-              </p>
+    <React.Suspense fallback={"Loading..."}>
+      <div className="flex h-screen w-screen">
+        <Navigation data={dataClassNames} />
+        <main className="flex-1 h-[90vh] my-10">
+          {!isLoading ? (
+            <div className="mx-3">
+              <div className="flex items-center justify-between mb-14">
+                <h2 className="capitalize-first-letter font-semibold text-2xl">
+                  {albums[0]}
+                </h2>
+                <p className="text-base">
+                  <span className="font-semibold">50</span> of{" "}
+                  <span className="font-semibold">{dataToDisplay.length}</span>{" "}
+                  images
+                </p>
+              </div>
+              <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200">
+                <ul className="flex flex-wrap mb-4 border-b-2">
+                  <li className="me-2">
+                    <Link
+                      href={`/?mode=${"all"}`}
+                      onClick={() => setMode("all")}
+                      className={cn({
+                        "inline-block px-5 py-1": true,
+                        "text-[#FFD75C] border-b-2 border-[#FFD75C] bg-[#fbf0d6]":
+                          mode == "all",
+                      })}
+                      ara-current="page"
+                    >
+                      All groups
+                    </Link>
+                  </li>
+                  <li className="me-2">
+                    <Link
+                      href={`/?mode=${"train"}`}
+                      onClick={() => setMode("train")}
+                      className={cn({
+                        "inline-block px-5 py-1": true,
+                        "text-[#FFD75C] border-b-2 border-[#FFD75C] bg-[#fbf0d6]":
+                          mode == "train",
+                      })}
+                      ara-current="page"
+                    >
+                      Train
+                    </Link>
+                  </li>
+                  <li className="me-2">
+                    <Link
+                      href={`/?mode=${"valid"}`}
+                      onClick={() => setMode("valid")}
+                      className={cn({
+                        "inline-block px-5 py-1": true,
+                        "text-[#FFD75C] border-b-2 border-[#FFD75C] bg-[#fbf0d6]":
+                          mode == "valid",
+                      })}
+                      ara-current="page"
+                    >
+                      Valid
+                    </Link>
+                  </li>
+                  <li className="me-2">
+                    <Link
+                      href={`/?mode=${"test"}`}
+                      onClick={() => setMode("test")}
+                      className={cn({
+                        "inline-block px-5 py-1": true,
+                        "text-[#FFD75C] border-b-2 border-[#FFD75C] bg-[#fbf0d6]":
+                          mode == "test",
+                      })}
+                      ara-current="page"
+                    >
+                      <p className="text-small">Test</p>
+                    </Link>
+                  </li>
+                </ul>
+              </div>
+              <div className="flex">
+                <ImagesContainer data={dataToDisplay} />
+              </div>
             </div>
-            <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200">
-              <ul className="flex flex-wrap mb-4 border-b-2">
-                <li className="me-2">
-                  <Link
-                    href={`/?mode=${'all'}`}
-                    onClick={() => setMode("all")}
-                    className={cn({
-                      "inline-block px-5 py-1": true,
-                      "text-[#FFD75C] border-b-2 border-[#FFD75C] bg-[#fbf0d6]":
-                        mode == "all",
-                    })}
-                    ara-current="page"
-                  >
-                    All groups
-                  </Link>
-                </li>
-                <li className="me-2">
-                  <Link
-                    href={`/?mode=${'train'}`}
-                    onClick={() => setMode("train")}
-                    className={cn({
-                      "inline-block px-5 py-1": true,
-                      "text-[#FFD75C] border-b-2 border-[#FFD75C] bg-[#fbf0d6]":
-                        mode == "train",
-                    })}
-                    ara-current="page"
-                  >
-                    Train
-                  </Link>
-                </li>
-                <li className="me-2">
-                  <Link
-                    href={`/?mode=${'valid'}`}
-                    onClick={() => setMode("valid")}
-                    className={cn({
-                      "inline-block px-5 py-1": true,
-                      "text-[#FFD75C] border-b-2 border-[#FFD75C] bg-[#fbf0d6]":
-                        mode == "valid",
-                    })}
-                    ara-current="page"
-                  >
-                    Valid
-                  </Link>
-                </li>
-                <li className="me-2">
-                  <Link
-                    href={`/?mode=${'test'}`}
-                    onClick={() => setMode("test")}
-                    className={cn({
-                      "inline-block px-5 py-1": true,
-                      "text-[#FFD75C] border-b-2 border-[#FFD75C] bg-[#fbf0d6]":
-                        mode == "test",
-                    })}
-                    ara-current="page"
-                  >
-                    <p className="text-small">Test</p>
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <div className="flex">
-              <ImagesContainer data={dataToDisplay} />
-            </div>
-          </div>
-        ) : (
-          <div className="flex items-center justify-center">Loading....</div>
-        )}
-      </main>
-    </div>
+          ) : (
+            <div className="flex items-center justify-center">Loading....</div>
+          )}
+        </main>
+      </div>
+    </React.Suspense>
   );
 }
