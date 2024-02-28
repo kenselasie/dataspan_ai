@@ -5,10 +5,10 @@ import Image from "next/image";
 import { mergeArrays, readTextFile } from "@/utils";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import yaml from 'js-yaml';
+import yaml from "js-yaml";
 
 import Navigation from "@/components/Navigation";
+import ImagesContainer from "@/components/ImagesContainer";
 export type BoneFractureType = {
   image: string;
   labels: string;
@@ -27,8 +27,7 @@ export default function Home() {
   });
   const href = `https://${s3.config.endpoint}/${albumBucketName}/bone-fracture-detection`;
   const [isLoading, setIsLoading] = React.useState(false);
-  const [openDialog, setOpendialog] = React.useState(false);
-  const [modalData, setModalData] = React.useState<BoneFractureType>();
+
   const [albums, setAlbums] = React.useState<string[]>([]);
   const [trainData, setTrainData] = React.useState<BoneFractureType[]>([]);
   const [validData, setValidData] = React.useState<BoneFractureType[]>([]);
@@ -49,7 +48,7 @@ export default function Home() {
       encodedAlbumName + "/" + encodeURIComponent(folderName);
     const items: string[] = await new Promise((resolve, _) => {
       s3.listObjects(
-        { Bucket: albumBucketName, Prefix: albumPhotosKey, MaxKeys: 50 },
+        { Bucket: albumBucketName, Prefix: albumPhotosKey, MaxKeys: 200 },
         function (this: any, err, data) {
           if (err) {
             return console.log(err);
@@ -78,10 +77,10 @@ export default function Home() {
       encodeURIComponent(albumName),
       "data.yaml"
     );
-    const classesYamlText = await readTextFile(classes[0])
+    const classesYamlText = await readTextFile(classes[0]);
     const yamlData: any = yaml.load(classesYamlText);
 
-    setDataClassName(yamlData?.names)
+    setDataClassName(yamlData?.names);
     const name =
       encodeURIComponent(albumName) + "/" + encodeURIComponent(folderName);
     const imagesData = await getCategoriesData(name, "images");
@@ -96,6 +95,7 @@ export default function Home() {
   };
 
   React.useEffect(() => {
+    setDataToDisplay([...trainData, ...validData, ...testData]);
     if (mode === "all") {
       setDataToDisplay([...trainData, ...validData, ...testData]);
     } else if (mode == "train") {
@@ -147,167 +147,89 @@ export default function Home() {
     getAllData();
   }, []);
 
-  const drawPolygon = (data: BoneFractureType) => {
-    const canvas = document.getElementById(
-      "overlayCanvas"
-    ) as HTMLCanvasElement;
-    const ctx = canvas?.getContext("2d");
-    if (!canvas || !ctx) return;
-
-    console.log('something')
-    ctx.lineWidth = 2;
-    ctx.strokeStyle = "red";
-
-    const coordinates = [
-      [0.2812864961679916, 0.18593750149011612],
-      [0.43129762479210765, 0.18604196943181694],
-      [0.4500078614345723, 0.26731557455032673],
-      [0.2792760821978364, 0.26262672532890263],
-    ];
-
-    ctx.beginPath();
-    ctx.moveTo(
-      coordinates[0][0] * canvas.width,
-      coordinates[0][1] * canvas.height
-    );
-    for (let i = 1; i < coordinates.length; i++) {
-      ctx.lineTo(
-        coordinates[i][0] * canvas.width,
-        coordinates[i][1] * canvas.height
-      );
-    }
-    ctx.closePath();
-    ctx.stroke();
-  };
-
-  const showImageModal = (data: BoneFractureType) => {
-    setOpendialog(true);
-    setModalData(data);
-    drawPolygon(data)
-  };
-
   return (
     <div className="flex h-screen w-screen">
       <Navigation data={dataClassNames} />
-      <main className="flex-1 h-[100vh] my-10">
-        <Dialog open={openDialog} onOpenChange={() => setOpendialog(false)}>
-          {!isLoading ? (
-            <div className="mx-3">
-              <div className="flex items-center justify-between mb-14">
-                <h2 className="capitalize-first-letter font-semibold text-2xl">
-                  {albums[0]}
-                </h2>
-                <p className="text-base">
-                  <span className="font-semibold">54</span> of{" "}
-                  <span className="font-semibold">{dataToDisplay.length}</span>{" "}
-                  images
-                </p>
-              </div>
-              <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200">
-                <ul className="flex flex-wrap mb-4 border-b-2">
-                  <li className="me-2">
-                    <Link
-                      href="#"
-                      onClick={() => setMode("all")}
-                      className={cn({
-                        "inline-block px-5 py-1": true,
-                        "text-[#FFD75C] border-b-2 border-[#FFD75C] bg-[#fbf0d6]":
-                          mode == "all",
-                      })}
-                      ara-current="page"
-                    >
-                      All groups
-                    </Link>
-                  </li>
-                  <li className="me-2">
-                    <Link
-                      href="#"
-                      onClick={() => setMode("train")}
-                      className={cn({
-                        "inline-block px-5 py-1": true,
-                        "text-[#FFD75C] border-b-2 border-[#FFD75C] bg-[#fbf0d6]":
-                          mode == "train",
-                      })}
-                      ara-current="page"
-                    >
-                      Train
-                    </Link>
-                  </li>
-                  <li className="me-2">
-                    <Link
-                      href="#"
-                      onClick={() => setMode("valid")}
-                      className={cn({
-                        "inline-block px-5 py-1": true,
-                        "text-[#FFD75C] border-b-2 border-[#FFD75C] bg-[#fbf0d6]":
-                          mode == "valid",
-                      })}
-                      ara-current="page"
-                    >
-                      Valid
-                    </Link>
-                  </li>
-                  <li className="me-2">
-                    <Link
-                      href="#"
-                      onClick={() => setMode("test")}
-                      className={cn({
-                        "inline-block px-5 py-1": true,
-                        "text-[#FFD75C] border-b-2 border-[#FFD75C] bg-[#fbf0d6]":
-                          mode == "test",
-                      })}
-                      ara-current="page"
-                    >
-                      <p className="text-small">Test</p>
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-              <div className="flex">
-                <div className="grid grid-cols-10 items-center gap-4 w-max">
-                  {dataToDisplay?.map((data, i) => (
-                    <div key={i}>
-                      <Image
-                        src={data.thumbnail}
-                        alt={data.labels}
-                        className="w-[100px] h-[100px]"
-                        width={100}
-                        height={100}
-                        onClick={() => showImageModal(data)}
-                      />
-                    </div>
-                  ))}
-                </div>
-              </div>
+      <main className="flex-1 h-[90vh] my-10">
+        {!isLoading ? (
+          <div className="mx-3">
+            <div className="flex items-center justify-between mb-14">
+              <h2 className="capitalize-first-letter font-semibold text-2xl">
+                {albums[0]}
+              </h2>
+              <p className="text-base">
+                <span className="font-semibold">50</span> of{" "}
+                <span className="font-semibold">{dataToDisplay.length}</span>{" "}
+                images
+              </p>
             </div>
-          ) : (
-            <div className="flex items-center justify-center">Loading....</div>
-          )}
-
-          <DialogContent className="sm:px-16 sm:max-w-[600px]">
-            {modalData && (
-              <div>
-                <div className="sm:max-w-[400px]">
-                  {/* <p className="text-wrap break-normal">{decodeURIComponent(modalData.image.replace(href, ''))}</p> */}
-                  <p className="text-wrap break-normal">{modalData.labels}</p>
-                </div>
-                <div className="flex flex-col items-center m-5">
-                  <Image
-                    src={modalData.image}
-                    alt={modalData.image}
-                    className="w-[500px] h-[500px]"
-                    width={100}
-                    height={100}
-                  />
-                  <canvas
-                    id="overlayCanvas"
-                    className="absolute top-0 left-0 w-[500px] h-[500px]"
-                  ></canvas>
-                </div>
-              </div>
-            )}
-          </DialogContent>
-        </Dialog>
+            <div className="text-sm font-medium text-center text-gray-500 border-b border-gray-200">
+              <ul className="flex flex-wrap mb-4 border-b-2">
+                <li className="me-2">
+                  <Link
+                    href={`/?mode=${'all'}`}
+                    onClick={() => setMode("all")}
+                    className={cn({
+                      "inline-block px-5 py-1": true,
+                      "text-[#FFD75C] border-b-2 border-[#FFD75C] bg-[#fbf0d6]":
+                        mode == "all",
+                    })}
+                    ara-current="page"
+                  >
+                    All groups
+                  </Link>
+                </li>
+                <li className="me-2">
+                  <Link
+                    href={`/?mode=${'train'}`}
+                    onClick={() => setMode("train")}
+                    className={cn({
+                      "inline-block px-5 py-1": true,
+                      "text-[#FFD75C] border-b-2 border-[#FFD75C] bg-[#fbf0d6]":
+                        mode == "train",
+                    })}
+                    ara-current="page"
+                  >
+                    Train
+                  </Link>
+                </li>
+                <li className="me-2">
+                  <Link
+                    href={`/?mode=${'valid'}`}
+                    onClick={() => setMode("valid")}
+                    className={cn({
+                      "inline-block px-5 py-1": true,
+                      "text-[#FFD75C] border-b-2 border-[#FFD75C] bg-[#fbf0d6]":
+                        mode == "valid",
+                    })}
+                    ara-current="page"
+                  >
+                    Valid
+                  </Link>
+                </li>
+                <li className="me-2">
+                  <Link
+                    href={`/?mode=${'test'}`}
+                    onClick={() => setMode("test")}
+                    className={cn({
+                      "inline-block px-5 py-1": true,
+                      "text-[#FFD75C] border-b-2 border-[#FFD75C] bg-[#fbf0d6]":
+                        mode == "test",
+                    })}
+                    ara-current="page"
+                  >
+                    <p className="text-small">Test</p>
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div className="flex">
+              <ImagesContainer data={dataToDisplay} />
+            </div>
+          </div>
+        ) : (
+          <div className="flex items-center justify-center">Loading....</div>
+        )}
       </main>
     </div>
   );
