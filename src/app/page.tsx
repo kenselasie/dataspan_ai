@@ -2,10 +2,11 @@
 import * as React from "react";
 import AWS from "aws-sdk";
 import Image from "next/image";
-import { mergeArrays } from "@/utils";
+import { mergeArrays, readTextFile } from "@/utils";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import yaml from 'js-yaml';
 
 import Navigation from "@/components/Navigation";
 export type BoneFractureType = {
@@ -38,15 +39,7 @@ export default function Home() {
   const [dataToDisplay, setDataToDisplay] = React.useState<BoneFractureType[]>(
     []
   );
-  const [dataClassNames, setDataClassName] = React.useState<string[]>([
-    "elbow positive",
-    "fingers positive",
-    "forearm fracture",
-    "humerus fracture",
-    "humerus",
-    "shoulder fracture",
-    "wrist positive",
-  ]);
+  const [dataClassNames, setDataClassName] = React.useState<string[]>([]);
 
   const getCategoriesData = async (
     encodedAlbumName: string,
@@ -85,7 +78,10 @@ export default function Home() {
       encodeURIComponent(albumName),
       "data.yaml"
     );
-    // console.log({classes})
+    const classesYamlText = await readTextFile(classes[0])
+    const yamlData: any = yaml.load(classesYamlText);
+
+    setDataClassName(yamlData?.names)
     const name =
       encodeURIComponent(albumName) + "/" + encodeURIComponent(folderName);
     const imagesData = await getCategoriesData(name, "images");

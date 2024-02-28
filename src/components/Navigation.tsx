@@ -9,19 +9,19 @@ const Navigation = ({ data }: { data: string[] }) => {
       <div className="h-[75px] w-[95%] flex justify-center items-center m-2">
         <Image src={logo} alt="org_logo" />
       </div>
-      <div className="mt-9 mx-10">
+      <div className="mt-9 mx-8">
         <section>
           <p className="font-semibold mt-8">Classes filter</p>
           <div className="flex space-x-3 mt-4">
             <p className="text-sm text-gray-300">Select all</p>
             <p className="text-sm text-blue-500">Deselect all</p>
           </div>
-          <div className="mt-4">
+          <div className="flex flex-wrap gap-x-2 mt-4">
             {data.map((data, i) => (
               <div className="" key={i}>
-                <div className="flex items-center border-2 border-[#3D9BE9] w-max py-1 px-2 rounded-3xl my-2 bg-[#b9d8f2]">
+                <div className="flex items-center border-2 border-[#3D9BE9] w-max py-1 pr-2 rounded-3xl my-2 bg-[#b9d8f2]">
                   <Dot color="#3D9BE9" spacing={0} strokeWidth={8} />{" "}
-                  <p className="text-sm font-semibold">{data}</p>
+                  <p className="text-sm font-semibold capitalize-first-letter">{data}</p>
                 </div>
               </div>
             ))}
